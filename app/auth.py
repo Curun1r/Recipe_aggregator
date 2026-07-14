@@ -1,27 +1,27 @@
 import os
 from datetime import datetime, timedelta, timezone
 
+import bcrypt
 import jwt
 from beanie import PydanticObjectId
 from flask import Request
-from passlib.context import CryptContext
 
 from app.models.user import User
-
-# bcrypt handles salting internally — unlike Django's PASSWORD_HASHERS
-# there is no framework layer, we call the hasher directly.
-_pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 _ALGORITHM = "HS256"
 _TOKEN_TTL = timedelta(hours=24)
 
 
 def hash_password(password: str) -> str:
-    return _pwd_context.hash(password)
+    # bcrypt directly (passlib is unmaintained and broken with bcrypt >= 5).
+    # gensalt() embeds the salt into the hash — unlike Django's
+    # PASSWORD_HASHERS there is no framework layer here.
+    # bcrypt only reads the first 72 bytes; 5.x raises instead of truncating.
+    return bcrypt.hashpw(password.encode()[:72], bcrypt.gensalt()).decode()
 
 
 def verify_password(password: str, password_hash: str) -> bool:
-    return _pwd_context.verify(password, password_hash)
+    return bcrypt.checkpw(password.encode()[:72], password_hash.encode())
 
 
 def create_access_token(user_id: str) -> str:
