@@ -7,7 +7,8 @@ from app import create_app
 
 @pytest.fixture
 def client() -> FlaskClient:
-    app: Flask = create_app()
+    # Smoke test of the GraphQL view only — no live Mongo needed.
+    app: Flask = create_app(init_database=False)
     return app.test_client()
 
 
