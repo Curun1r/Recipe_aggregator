@@ -2,5 +2,7 @@ flask[async]
 strawberry-graphql[flask]
 beanie>=2
 pydantic[email]
+passlib[bcrypt]
+pyjwt
 pytest
 pytest-asyncio
