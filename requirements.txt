@@ -1,0 +1,5 @@
+flask
+strawberry-graphql[flask]
+motor
+beanie
+pytest
