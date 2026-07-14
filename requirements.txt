@@ -1,5 +1,5 @@
-flask
+flask[async]
 strawberry-graphql[flask]
-motor
-beanie
+beanie>=2
 pytest
+pytest-asyncio

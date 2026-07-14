@@ -1,7 +1,9 @@
 import os
 
 from beanie import init_beanie
-from motor.motor_asyncio import AsyncIOMotorClient
+from pymongo import AsyncMongoClient
+
+from app.models.recipe import Recipe
 
 
 async def init_db(mongo_uri: str | None = None) -> None:
@@ -12,9 +14,9 @@ async def init_db(mongo_uri: str | None = None) -> None:
     and creates indexes at startup.
     """
     uri: str = mongo_uri or os.environ["MONGO_URI"]
-    client: AsyncIOMotorClient = AsyncIOMotorClient(uri)
+    client: AsyncMongoClient = AsyncMongoClient(uri)
 
     await init_beanie(
         database=client.get_default_database(),
-        document_models=[],  # domain models (Recipe, User, Comment) go here
+        document_models=[Recipe],
     )
