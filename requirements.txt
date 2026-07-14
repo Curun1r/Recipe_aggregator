@@ -1,5 +1,6 @@
 flask[async]
 strawberry-graphql[flask]
 beanie>=2
+pydantic[email]
 pytest
 pytest-asyncio
