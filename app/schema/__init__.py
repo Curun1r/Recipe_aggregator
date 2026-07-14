@@ -1,5 +1,7 @@
 import strawberry
 
+from app.schema.mutations import AuthMutations
+
 
 @strawberry.type
 class Query:
@@ -8,4 +10,9 @@ class Query:
         return "world"
 
 
-schema = strawberry.Schema(query=Query)
+@strawberry.type
+class Mutation(AuthMutations):
+    """Root mutation, composed from per-domain mutation classes."""
+
+
+schema = strawberry.Schema(query=Query, mutation=Mutation)
