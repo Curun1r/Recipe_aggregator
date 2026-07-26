@@ -55,7 +55,7 @@ mutation CreateRecipe($input: CreateRecipeInput!) {
 @pytest_asyncio.fixture
 async def test_db() -> AsyncIterator[None]:
     uri: str = os.environ.get("MONGO_URI", "mongodb://localhost:27017")
-    client: AsyncMongoClient = AsyncMongoClient(uri)
+    client: AsyncMongoClient = AsyncMongoClient(uri, tz_aware=True)
     await init_beanie(database=client[TEST_DB_NAME], document_models=[Recipe, User])
     yield
     await client.drop_database(TEST_DB_NAME)

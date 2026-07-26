@@ -1,5 +1,5 @@
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import AsyncIterator
 
 import pytest
@@ -22,7 +22,7 @@ async def test_db() -> AsyncIterator[None]:
     Requires a running Mongo: docker compose up -d mongo
     """
     uri: str = os.environ.get("MONGO_URI", "mongodb://localhost:27017")
-    client: AsyncMongoClient = AsyncMongoClient(uri)
+    client: AsyncMongoClient = AsyncMongoClient(uri, tz_aware=True)
 
     # Force the test DB name regardless of what URI points to,
     # so tests can never touch the real database.
@@ -67,3 +67,6 @@ async def test_recipe_insert_and_get(test_db: None) -> None:
     assert fetched.author.email == "yehor@example.com"
     assert fetched.tags == []
     assert isinstance(fetched.created_at, datetime)
+    # Round-trip stays tz-aware — only true because the client is tz_aware=True.
+    assert fetched.created_at.tzinfo is not None
+    assert fetched.created_at.utcoffset() == timedelta(0)

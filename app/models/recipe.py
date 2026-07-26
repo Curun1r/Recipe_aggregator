@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 from beanie import Document, Link
 from pydantic import BaseModel, Field
@@ -37,9 +37,10 @@ class Recipe(Document):
     # either fetch_links=True, or (better for N+1) a DataLoader.
     author: Link[User]
     tags: list[str] = []
-    # default_factory, not default=datetime.utcnow() — otherwise the timestamp
-    # would be fixed at import time (same pitfall as mutable defaults in Django).
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    # default_factory, not default=... — otherwise the timestamp would be
+    # fixed at import time (same pitfall as mutable defaults in Django).
+    # tz-aware: utcnow() is deprecated in 3.12 and returned naive datetimes.
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     class Settings:
         name = "recipes"

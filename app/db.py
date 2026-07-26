@@ -15,7 +15,10 @@ async def init_db(mongo_uri: str | None = None) -> None:
     and creates indexes at startup.
     """
     uri: str = mongo_uri or os.environ["MONGO_URI"]
-    client: AsyncMongoClient = AsyncMongoClient(uri)
+    # tz_aware=True: BSON always stores UTC, but decodes to *naive* datetimes
+    # by default — so a tz-aware created_at would come back naive and
+    # comparisons would blow up. Django's USE_TZ, done by hand.
+    client: AsyncMongoClient = AsyncMongoClient(uri, tz_aware=True)
 
     await init_beanie(
         database=client.get_default_database(),
