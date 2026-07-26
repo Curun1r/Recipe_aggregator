@@ -6,17 +6,7 @@ from pymongo.errors import DuplicateKeyError
 
 from app.auth import create_access_token, hash_password, verify_password
 from app.models.user import User
-
-
-@strawberry.type
-class UserType:
-    id: strawberry.ID
-    email: str
-    name: str
-
-    @classmethod
-    def from_model(cls, user: User) -> "UserType":
-        return cls(id=strawberry.ID(str(user.id)), email=user.email, name=user.name)
+from app.schema.types.user import UserType
 
 
 @strawberry.type

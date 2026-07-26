@@ -1,17 +1,18 @@
 import strawberry
 
-from app.schema.mutations import AuthMutations
+from app.schema.mutations import AuthMutations, RecipeMutations
+from app.schema.queries import RecipeQueries
 
 
 @strawberry.type
-class Query:
+class Query(RecipeQueries):
     @strawberry.field
     def hello(self) -> str:
         return "world"
 
 
 @strawberry.type
-class Mutation(AuthMutations):
+class Mutation(AuthMutations, RecipeMutations):
     """Root mutation, composed from per-domain mutation classes."""
 
 
