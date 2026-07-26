@@ -8,6 +8,7 @@ from beanie import init_beanie
 from pymongo import AsyncMongoClient
 
 from app.models.recipe import Ingredient, Recipe, Step
+from app.models.user import User
 
 TEST_DB_NAME = "recipe_aggregator_test"
 
@@ -25,7 +26,7 @@ async def test_db() -> AsyncIterator[None]:
 
     # Force the test DB name regardless of what URI points to,
     # so tests can never touch the real database.
-    await init_beanie(database=client[TEST_DB_NAME], document_models=[Recipe])
+    await init_beanie(database=client[TEST_DB_NAME], document_models=[Recipe, User])
 
     yield
 
@@ -38,16 +39,21 @@ async def test_recipe_insert_and_get(test_db: None) -> None:
     ingredient = Ingredient(name="Flour", amount=200.0, unit="g")
     step = Step(order=1, text="Mix the flour with water.")
 
+    author = User(email="yehor@example.com", password_hash="x", name="Yehor")
+    await author.insert()
+
     recipe = Recipe(
         title="Simple Bread",
         description="A minimal bread recipe.",
         ingredients=[ingredient],
         steps=[step],
-        author_name="Yehor",
+        author=author,
     )
     await recipe.insert()
 
-    fetched: Recipe | None = await Recipe.get(recipe.id)
+    # fetch_links=True resolves the DBRef — the explicit opt-in Django's
+    # select_related makes optional but its ORM would do lazily anyway.
+    fetched: Recipe | None = await Recipe.get(recipe.id, fetch_links=True)
 
     assert fetched is not None
     assert fetched.title == "Simple Bread"
@@ -56,6 +62,8 @@ async def test_recipe_insert_and_get(test_db: None) -> None:
     assert fetched.ingredients[0].amount == 200.0
     assert fetched.steps[0].order == 1
     assert fetched.steps[0].text == "Mix the flour with water."
-    assert fetched.author_name == "Yehor"
+    assert isinstance(fetched.author, User)
+    assert fetched.author.id == author.id
+    assert fetched.author.email == "yehor@example.com"
     assert fetched.tags == []
     assert isinstance(fetched.created_at, datetime)

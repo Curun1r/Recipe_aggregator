@@ -1,7 +1,9 @@
 from datetime import datetime
 
-from beanie import Document
+from beanie import Document, Link
 from pydantic import BaseModel, Field
+
+from app.models.user import User
 
 
 class Ingredient(BaseModel):
@@ -30,7 +32,10 @@ class Recipe(Document):
     description: str
     ingredients: list[Ingredient]
     steps: list[Step]
-    author_name: str
+    # Link stores a DBRef, not the embedded user — the closest thing Mongo
+    # has to a FK. Unlike Django's ForeignKey it is NOT joined automatically:
+    # either fetch_links=True, or (better for N+1) a DataLoader.
+    author: Link[User]
     tags: list[str] = []
     # default_factory, not default=datetime.utcnow() — otherwise the timestamp
     # would be fixed at import time (same pitfall as mutable defaults in Django).
