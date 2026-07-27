@@ -6,11 +6,11 @@ from app.schema.mutations import (
     FavoriteMutations,
     RecipeMutations,
 )
-from app.schema.queries import RecipeQueries
+from app.schema.queries import RecipeQueries, UserQueries
 
 
 @strawberry.type
-class Query(RecipeQueries):
+class Query(RecipeQueries, UserQueries):
     @strawberry.field
     def hello(self) -> str:
         return "world"
