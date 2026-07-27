@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 from typing import Annotated
 
-from beanie import Document, Indexed
+from beanie import Document, Indexed, PydanticObjectId
 from pydantic import EmailStr, Field
 
 
@@ -14,6 +14,12 @@ class User(Document):
     email: Annotated[EmailStr, Indexed(unique=True)]
     password_hash: str
     name: str
+    # Favourites live on the user as an array of ids, not in a join
+    # collection: the set is small, bounded and always read together with
+    # the user. Mongo's $addToSet/$pull make toggling atomic — no
+    # read-modify-write race, which a through-model would need a
+    # transaction for.
+    favorite_recipe_ids: list[PydanticObjectId] = Field(default_factory=list)
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     class Settings:
