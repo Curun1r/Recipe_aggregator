@@ -1,0 +1,51 @@
+from typing import Annotated, Union
+
+import strawberry
+from beanie import PydanticObjectId
+from strawberry.types import Info
+
+from app.models.comment import Comment
+from app.models.recipe import Recipe
+from app.models.user import User
+from app.schema.permissions import IsAuthenticated
+from app.schema.types.comment import CommentType
+
+
+@strawberry.type
+class CommentPayload:
+    comment: CommentType
+
+
+@strawberry.type
+class CommentError:
+    message: str
+
+
+# Same split as AuthResult: "recipe not found" is a business outcome the
+# client renders, while "not logged in" is a permission error — the two
+# are deliberately not modelled the same way.
+CommentResult = Annotated[
+    Union[CommentPayload, CommentError], strawberry.union("CommentResult")
+]
+
+
+@strawberry.type
+class CommentMutations:
+    @strawberry.mutation(permission_classes=[IsAuthenticated])
+    async def add_comment(
+        self, recipe_id: strawberry.ID, text: str, info: Info
+    ) -> CommentResult:
+        try:
+            oid = PydanticObjectId(recipe_id)
+        except (ValueError, TypeError):
+            # Malformed id is indistinguishable from missing, for the client.
+            return CommentError(message="Recipe not found")
+
+        if await Recipe.get(oid) is None:
+            return CommentError(message="Recipe not found")
+
+        current_user: User = info.context["current_user"]
+        comment = Comment(recipe_id=oid, author=current_user, text=text)
+        await comment.insert()
+
+        return CommentPayload(comment=CommentType.from_model(comment))
