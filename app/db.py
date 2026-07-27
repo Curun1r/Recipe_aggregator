@@ -3,6 +3,7 @@ import os
 from beanie import init_beanie
 from pymongo import AsyncMongoClient
 
+from app.models.comment import Comment
 from app.models.recipe import Recipe
 from app.models.user import User
 
@@ -22,5 +23,5 @@ async def init_db(mongo_uri: str | None = None) -> None:
 
     await init_beanie(
         database=client.get_default_database(),
-        document_models=[Recipe, User],
+        document_models=[Recipe, User, Comment],
     )
