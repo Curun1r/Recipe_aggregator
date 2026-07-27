@@ -7,7 +7,7 @@ from strawberry.flask.views import AsyncGraphQLView
 from app.auth import get_current_user
 from app.db import init_db
 from app.schema import schema
-from app.schema.dataloaders import create_dataloaders
+from app.schema.dataloaders import create_comments_loader, create_dataloaders
 
 
 class AuthGraphQLView(AsyncGraphQLView):
@@ -24,6 +24,7 @@ class AuthGraphQLView(AsyncGraphQLView):
             # Per-request loader: caching across requests would leak
             # one user's data into another's response.
             "user_loader": create_dataloaders(),
+            "comments_loader": create_comments_loader(),
         }
 
 
