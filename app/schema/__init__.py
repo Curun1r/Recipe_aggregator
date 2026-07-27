@@ -1,6 +1,11 @@
 import strawberry
 
-from app.schema.mutations import AuthMutations, CommentMutations, RecipeMutations
+from app.schema.mutations import (
+    AuthMutations,
+    CommentMutations,
+    FavoriteMutations,
+    RecipeMutations,
+)
 from app.schema.queries import RecipeQueries
 
 
@@ -12,7 +17,7 @@ class Query(RecipeQueries):
 
 
 @strawberry.type
-class Mutation(AuthMutations, RecipeMutations, CommentMutations):
+class Mutation(AuthMutations, RecipeMutations, CommentMutations, FavoriteMutations):
     """Root mutation, composed from per-domain mutation classes."""
 
 
