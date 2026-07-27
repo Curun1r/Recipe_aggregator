@@ -6,10 +6,11 @@ import pytest_asyncio
 from beanie import init_beanie
 from pymongo import AsyncMongoClient
 
+from app.models.comment import Comment
 from app.models.recipe import Ingredient, Recipe, Step
 from app.models.user import User
 from app.schema import schema
-from app.schema.dataloaders import create_dataloaders
+from app.schema.dataloaders import create_comments_loader, create_dataloaders
 
 os.environ.setdefault("JWT_SECRET", "test-secret")
 
@@ -56,7 +57,9 @@ mutation CreateRecipe($input: CreateRecipeInput!) {
 async def test_db() -> AsyncIterator[None]:
     uri: str = os.environ.get("MONGO_URI", "mongodb://localhost:27017")
     client: AsyncMongoClient = AsyncMongoClient(uri, tz_aware=True)
-    await init_beanie(database=client[TEST_DB_NAME], document_models=[Recipe, User])
+    await init_beanie(
+        database=client[TEST_DB_NAME], document_models=[Recipe, User, Comment]
+    )
     yield
     await client.drop_database(TEST_DB_NAME)
     await client.close()
@@ -65,7 +68,11 @@ async def test_db() -> AsyncIterator[None]:
 def _context(current_user: User | None = None) -> dict[str, Any]:
     """Mirrors AuthGraphQLView.get_context() — a fresh loader per execution,
     exactly as a real request would get."""
-    return {"current_user": current_user, "user_loader": create_dataloaders()}
+    return {
+        "current_user": current_user,
+        "user_loader": create_dataloaders(),
+        "comments_loader": create_comments_loader(),
+    }
 
 
 async def _make_user(email: str = "yehor@example.com") -> User:
