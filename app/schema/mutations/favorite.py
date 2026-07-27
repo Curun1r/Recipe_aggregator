@@ -3,6 +3,7 @@ from typing import Annotated, Union
 import strawberry
 from beanie import PydanticObjectId
 from beanie.operators import AddToSet, Pull
+from bson.errors import InvalidId
 from strawberry.types import Info
 
 from app.models.recipe import Recipe
@@ -35,7 +36,9 @@ class FavoriteMutations:
     ) -> FavoriteResult:
         try:
             oid = PydanticObjectId(recipe_id)
-        except (ValueError, TypeError):
+        # InvalidId is a BSONError, NOT a ValueError — catching only
+        # ValueError lets a malformed id escape as a 500.
+        except (InvalidId, ValueError, TypeError):
             return FavoriteError(message="Recipe not found")
 
         recipe = await Recipe.get(oid)

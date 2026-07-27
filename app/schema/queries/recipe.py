@@ -1,5 +1,6 @@
 import strawberry
 from beanie import PydanticObjectId
+from bson.errors import InvalidId
 
 from app.models.recipe import Recipe
 from app.schema.types.recipe import RecipeType
@@ -18,7 +19,7 @@ class RecipeQueries:
     async def recipe(self, id: strawberry.ID) -> RecipeType | None:
         try:
             oid = PydanticObjectId(id)
-        except (ValueError, TypeError):
+        except (InvalidId, ValueError, TypeError):
             # Malformed id is "not found", not a server error.
             return None
 

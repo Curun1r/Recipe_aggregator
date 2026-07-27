@@ -2,6 +2,7 @@ from typing import Annotated, Union
 
 import strawberry
 from beanie import PydanticObjectId
+from bson.errors import InvalidId
 from strawberry.types import Info
 
 from app.models.comment import Comment
@@ -37,7 +38,7 @@ class CommentMutations:
     ) -> CommentResult:
         try:
             oid = PydanticObjectId(recipe_id)
-        except (ValueError, TypeError):
+        except (InvalidId, ValueError, TypeError):
             # Malformed id is indistinguishable from missing, for the client.
             return CommentError(message="Recipe not found")
 

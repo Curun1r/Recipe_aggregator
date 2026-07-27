@@ -4,6 +4,7 @@ from datetime import datetime, timedelta, timezone
 import bcrypt
 import jwt
 from beanie import PydanticObjectId
+from bson.errors import InvalidId
 from flask import Request
 
 from app.models.user import User
@@ -59,6 +60,6 @@ async def get_current_user(request: Request) -> User | None:
 
     try:
         oid = PydanticObjectId(user_id)
-    except (ValueError, TypeError):
+    except (InvalidId, ValueError, TypeError):
         return None
     return await User.get(oid)
