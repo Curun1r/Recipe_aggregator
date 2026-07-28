@@ -9,10 +9,24 @@ Flask (app factory) · Strawberry GraphQL (code-first) · MongoDB + Beanie (PyMo
 ## Running
 
 ```bash
-docker-compose up --build
+docker compose up --build
 ```
 
 GraphQL playground: http://localhost:5000/graphql
+
+Locally, without Docker — **use hypercorn, not `flask run`**:
+
+```bash
+docker compose up -d mongo
+JWT_SECRET=$(python -c "import secrets; print(secrets.token_urlsafe(32))") \
+MONGO_URI=mongodb://localhost:27017/recipe_aggregator \
+hypercorn app.wsgi:asgi_app --bind 0.0.0.0:5000
+```
+
+`flask run` serves WSGI, which hands every request a fresh event loop;
+`AsyncMongoClient` is bound to the loop it was created on and raises
+`Cannot use AsyncMongoClient in different event loop` on the second request.
+Serving the app as ASGI (`app/wsgi.py`) keeps everything on one loop.
 
 Smoke query:
 
@@ -38,5 +52,6 @@ app/
   __init__.py   # create_app() factory
   schema/       # Strawberry schema
   db.py         # PyMongo Async client + init_beanie
+  wsgi.py       # ASGI entrypoint (WsgiToAsgi) — see "Running"
 tests/
 ```

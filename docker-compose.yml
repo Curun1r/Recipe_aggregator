@@ -14,6 +14,9 @@ services:
       - mongo
     environment:
       MONGO_URI: mongodb://mongo:27017/recipe_aggregator
+      # Local development only — generate a real one for anything deployed:
+      # python -c "import secrets; print(secrets.token_urlsafe(32))"
+      JWT_SECRET: ${JWT_SECRET:-local-dev-secret-not-for-production-use}
 
 volumes:
   mongo_data:

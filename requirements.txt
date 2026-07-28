@@ -1,4 +1,5 @@
 flask[async]
+hypercorn
 strawberry-graphql[flask]
 beanie>=2
 pydantic[email]
