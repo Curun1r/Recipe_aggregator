@@ -7,3 +7,4 @@ bcrypt
 pyjwt
 pytest
 pytest-asyncio
+httpx
