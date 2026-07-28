@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>recipe-aggregator</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      max-width: 46rem;
+      margin: 0 auto;
+      padding: 2rem 1rem 4rem;
+      line-height: 1.5;
+      color: #1c1c1c;
+    }
+    h1 { margin-bottom: 0.25rem; }
+    .subtitle { color: #666; margin-top: 0; }
+    .recipe {
+      border-top: 1px solid #e5e5e5;
+      padding: 1.25rem 0;
+    }
+    .recipe h2 { margin: 0 0 0.35rem; font-size: 1.15rem; }
+    .meta { color: #666; font-size: 0.875rem; margin: 0 0 0.5rem; }
+    .description { margin: 0 0 0.6rem; }
+    .tag {
+      display: inline-block;
+      background: #f0f0f0;
+      border-radius: 0.75rem;
+      padding: 0.1rem 0.6rem;
+      margin-right: 0.3rem;
+      font-size: 0.8rem;
+    }
+    .empty {
+      border: 1px dashed #ccc;
+      border-radius: 0.5rem;
+      padding: 2rem 1rem;
+      text-align: center;
+      color: #666;
+    }
+    footer {
+      margin-top: 2.5rem;
+      padding-top: 1rem;
+      border-top: 1px solid #e5e5e5;
+      font-size: 0.9rem;
+      color: #666;
+    }
+    code {
+      background: #f5f5f5;
+      padding: 0.15rem 0.35rem;
+      border-radius: 0.25rem;
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>Рецепти</h1>
+  <p class="subtitle">Демонстраційна сторінка. Усі дії — через GraphQL API.</p>
+
+  {% if recipes %}
+    {% for recipe in recipes %}
+      <article class="recipe">
+        <h2>{{ recipe.title }}</h2>
+        <p class="meta">
+          {# after fetch_links=True author is a User document, not a Link #}
+          Автор: {{ recipe.author.name }} ·
+          Інгредієнтів: {{ recipe.ingredients | length }}
+        </p>
+        <p class="description">{{ recipe.description | truncate(150) }}</p>
+        {% for tag in recipe.tags %}
+          <span class="tag">{{ tag }}</span>
+        {% endfor %}
+      </article>
+    {% endfor %}
+  {% else %}
+    <p class="empty">Поки що порожньо — жодного рецепта ще не додано.</p>
+  {% endif %}
+
+  <footer>
+    Спробуй у <a href="/graphql">GraphiQL</a>:
+    <code>{ recipes { title author { name } comments { text } } }</code>
+  </footer>
+</body>
+</html>

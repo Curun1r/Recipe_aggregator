@@ -8,6 +8,7 @@ from app.auth import get_current_user
 from app.db import init_db
 from app.schema import schema
 from app.schema.dataloaders import create_comments_loader, create_dataloaders
+from app.views import index
 
 
 class AuthGraphQLView(AsyncGraphQLView):
@@ -58,6 +59,8 @@ def create_app(init_database: bool = True) -> Flask:
                 if not db_ready:
                     await init_db()
                     db_ready = True
+
+    app.add_url_rule("/", view_func=index)
 
     app.add_url_rule(
         "/graphql",
