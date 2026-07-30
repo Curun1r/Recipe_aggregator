@@ -9,7 +9,9 @@ services:
   app:
     build: .
     ports:
-      - "5000:5000"
+      # Host 8000, not 5000: on macOS the AirPlay Receiver (Control Center)
+      # already listens on 5000 and answers 403.
+      - "8000:5000"
     depends_on:
       - mongo
     environment:

@@ -12,7 +12,10 @@ Flask (app factory) · Strawberry GraphQL (code-first) · MongoDB + Beanie (PyMo
 docker compose up --build
 ```
 
-GraphQL playground: http://localhost:5000/graphql
+Recipes page: http://localhost:8000/ · GraphQL playground: http://localhost:8000/graphql
+
+Port 8000, not 5000 — on macOS the AirPlay Receiver occupies 5000 and
+answers every request with 403.
 
 Locally, without Docker — **use hypercorn, not `flask run`**:
 
@@ -20,7 +23,7 @@ Locally, without Docker — **use hypercorn, not `flask run`**:
 docker compose up -d mongo
 JWT_SECRET=$(python -c "import secrets; print(secrets.token_urlsafe(32))") \
 MONGO_URI=mongodb://localhost:27017/recipe_aggregator \
-hypercorn app.wsgi:asgi_app --bind 0.0.0.0:5000
+hypercorn app.wsgi:asgi_app --bind 0.0.0.0:8000
 ```
 
 `flask run` serves WSGI, which hands every request a fresh event loop;
