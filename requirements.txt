@@ -5,6 +5,3 @@ beanie>=2
 pydantic[email]
 bcrypt
 pyjwt
-pytest
-pytest-asyncio
-httpx
