@@ -238,7 +238,10 @@ async def _seed_recipes(users: dict[str, User], stats: SeedStats) -> dict[str, R
         # Title alone isn't unique enough — two users may post "Borscht".
         # Beanie translates author.id into the DBRef's author.$id.
         existing = await Recipe.find_one(
-            Recipe.title == demo["title"], Recipe.author.id == author.id
+            Recipe.title == demo["title"],
+            # Ignored below: on the class, `author` is a query expression,
+            # not a Link instance; Beanie's types don't model that split.
+            Recipe.author.id == author.id,  # type: ignore[attr-defined]
         )
         if existing is not None:
             recipes[demo["title"]] = existing
@@ -253,8 +256,7 @@ async def _seed_recipes(users: dict[str, User], stats: SeedStats) -> dict[str, R
                 for name, amount, unit in demo["ingredients"]
             ],
             steps=[
-                Step(order=order, text=text)
-                for order, text in enumerate(demo["steps"], start=1)
+                Step(order=order, text=text) for order, text in enumerate(demo["steps"], start=1)
             ],
             tags=list(demo["tags"]),
             author=author,
@@ -275,7 +277,8 @@ async def _seed_comments(
 
         existing = await Comment.find_one(
             Comment.recipe_id == recipe.id,
-            Comment.author.id == author.id,
+            # Same class-level query expression as above.
+            Comment.author.id == author.id,  # type: ignore[attr-defined]
             Comment.text == demo["text"],
         )
         if existing is not None:

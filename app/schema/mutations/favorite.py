@@ -1,4 +1,4 @@
-from typing import Annotated, Union
+from typing import Annotated
 
 import strawberry
 from beanie import PydanticObjectId
@@ -23,17 +23,13 @@ class FavoriteError:
     message: str
 
 
-FavoriteResult = Annotated[
-    Union[FavoritePayload, FavoriteError], strawberry.union("FavoriteResult")
-]
+FavoriteResult = Annotated[FavoritePayload | FavoriteError, strawberry.union("FavoriteResult")]
 
 
 @strawberry.type
 class FavoriteMutations:
     @strawberry.mutation(permission_classes=[IsAuthenticated])
-    async def toggle_favorite(
-        self, recipe_id: strawberry.ID, info: Info
-    ) -> FavoriteResult:
+    async def toggle_favorite(self, recipe_id: strawberry.ID, info: Info) -> FavoriteResult:
         try:
             oid = PydanticObjectId(recipe_id)
         # InvalidId is a BSONError, NOT a ValueError — catching only
@@ -59,6 +55,4 @@ class FavoriteMutations:
         )
         await current_user.update(operator)
 
-        return FavoritePayload(
-            is_favorited=is_favorited, recipe=RecipeType.from_model(recipe)
-        )
+        return FavoritePayload(is_favorited=is_favorited, recipe=RecipeType.from_model(recipe))

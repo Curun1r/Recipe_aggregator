@@ -1,5 +1,5 @@
 import os
-from typing import AsyncIterator
+from collections.abc import AsyncIterator
 
 import httpx
 import pytest
@@ -29,9 +29,7 @@ async def client() -> AsyncIterator[httpx.AsyncClient]:
     """
     uri: str = os.environ.get("MONGO_URI", "mongodb://localhost:27017")
     mongo: AsyncMongoClient = AsyncMongoClient(uri, tz_aware=True)
-    await init_beanie(
-        database=mongo[TEST_DB_NAME], document_models=[Recipe, User, Comment]
-    )
+    await init_beanie(database=mongo[TEST_DB_NAME], document_models=[Recipe, User, Comment])
 
     # init_database=False: Beanie is already initialised above, on this loop.
     asgi_app = WsgiToAsgi(create_app(init_database=False))

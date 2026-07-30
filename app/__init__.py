@@ -17,7 +17,12 @@ class AuthGraphQLView(AsyncGraphQLView):
     populating request.user. Resolvers read info.context["current_user"].
     """
 
-    async def get_context(self, request: Request, response: Response) -> dict[str, Any]:
+    # Ignored below: Strawberry's base view annotates get_context as
+    # returning None instead of the context type, so any real context
+    # implementation is reported as an incompatible override.
+    async def get_context(  # type: ignore[override]
+        self, request: Request, response: Response
+    ) -> dict[str, Any]:
         return {
             "request": request,
             "response": response,

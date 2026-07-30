@@ -1,5 +1,5 @@
 import os
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 import bcrypt
 import jwt
@@ -28,7 +28,7 @@ def verify_password(password: str, password_hash: str) -> bool:
 def create_access_token(user_id: str) -> str:
     payload: dict[str, object] = {
         "sub": user_id,
-        "exp": datetime.now(timezone.utc) + _TOKEN_TTL,
+        "exp": datetime.now(UTC) + _TOKEN_TTL,
     }
     # Secret is read at call time (not import time) so tests can set it
     # via env without import-order issues.

@@ -27,7 +27,5 @@ class UserQueries:
             # In([]) would match nothing anyway, but skip the round trip.
             return []
 
-        recipes = await Recipe.find(
-            In(Recipe.id, current_user.favorite_recipe_ids)
-        ).to_list()
+        recipes = await Recipe.find(In(Recipe.id, current_user.favorite_recipe_ids)).to_list()
         return [RecipeType.from_model(recipe) for recipe in recipes]

@@ -1,6 +1,6 @@
 import os
+from collections.abc import AsyncIterator
 from datetime import datetime, timedelta
-from typing import AsyncIterator
 
 import pytest
 import pytest_asyncio

@@ -1,5 +1,6 @@
 import os
-from typing import Any, AsyncIterator
+from collections.abc import AsyncIterator
+from typing import Any, cast
 
 import pytest
 import pytest_asyncio
@@ -57,9 +58,7 @@ mutation CreateRecipe($input: CreateRecipeInput!) {
 async def test_db() -> AsyncIterator[None]:
     uri: str = os.environ.get("MONGO_URI", "mongodb://localhost:27017")
     client: AsyncMongoClient = AsyncMongoClient(uri, tz_aware=True)
-    await init_beanie(
-        database=client[TEST_DB_NAME], document_models=[Recipe, User, Comment]
-    )
+    await init_beanie(database=client[TEST_DB_NAME], document_models=[Recipe, User, Comment])
     yield
     await client.drop_database(TEST_DB_NAME)
     await client.close()
@@ -190,4 +189,5 @@ async def test_create_recipe_with_current_user(test_db: None) -> None:
     # Persisted, and the author link points at the logged-in user.
     stored = await Recipe.get(created["id"], fetch_links=True)
     assert stored is not None
-    assert stored.author.id == author.id
+    # fetch_links=True resolved the Link into a User document.
+    assert cast(User, stored.author).id == author.id

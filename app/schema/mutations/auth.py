@@ -1,4 +1,4 @@
-from typing import Annotated, Union
+from typing import Annotated
 
 import pydantic
 import strawberry
@@ -23,7 +23,7 @@ class AuthError:
 # Expected failures (duplicate email, bad credentials) are part of the schema,
 # not exceptions: the client gets a typed result instead of a 500.
 # The GraphQL analogue of DRF's serializer.errors -> 400 response.
-AuthResult = Annotated[Union[AuthPayload, AuthError], strawberry.union("AuthResult")]
+AuthResult = Annotated[AuthPayload | AuthError, strawberry.union("AuthResult")]
 
 
 def _payload(user: User) -> AuthPayload:

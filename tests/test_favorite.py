@@ -1,5 +1,6 @@
 import os
-from typing import Any, AsyncIterator
+from collections.abc import AsyncIterator
+from typing import Any
 
 import pytest
 import pytest_asyncio
@@ -39,9 +40,7 @@ query { me { id email name } }
 async def test_db() -> AsyncIterator[None]:
     uri: str = os.environ.get("MONGO_URI", "mongodb://localhost:27017")
     client: AsyncMongoClient = AsyncMongoClient(uri, tz_aware=True)
-    await init_beanie(
-        database=client[TEST_DB_NAME], document_models=[Recipe, User, Comment]
-    )
+    await init_beanie(database=client[TEST_DB_NAME], document_models=[Recipe, User, Comment])
     yield
     await client.drop_database(TEST_DB_NAME)
     await client.close()

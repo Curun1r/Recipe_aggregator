@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import cast
 
 import strawberry
 from beanie import Link, PydanticObjectId
@@ -19,9 +20,7 @@ class IngredientType:
 
     @classmethod
     def from_model(cls, ingredient: Ingredient) -> "IngredientType":
-        return cls(
-            name=ingredient.name, amount=ingredient.amount, unit=ingredient.unit
-        )
+        return cls(name=ingredient.name, amount=ingredient.amount, unit=ingredient.unit)
 
 
 @strawberry.type
@@ -82,5 +81,7 @@ class RecipeType:
             tags=list(recipe.tags),
             created_at=recipe.created_at,
             _author_id=author_id,
-            _id_oid=recipe.id,
+            # Optional only for unsaved documents; from_model always gets a
+            # document read back from Mongo.
+            _id_oid=cast(PydanticObjectId, recipe.id),
         )

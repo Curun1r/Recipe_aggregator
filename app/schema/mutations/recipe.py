@@ -41,8 +41,7 @@ class RecipeMutations:
             title=input.title,
             description=input.description,
             ingredients=[
-                Ingredient(name=i.name, amount=i.amount, unit=i.unit)
-                for i in input.ingredients
+                Ingredient(name=i.name, amount=i.amount, unit=i.unit) for i in input.ingredients
             ],
             steps=[Step(order=s.order, text=s.text) for s in input.steps],
             tags=list(input.tags),

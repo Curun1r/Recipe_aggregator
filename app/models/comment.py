@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Annotated
 
 from beanie import Document, Indexed, Link, PydanticObjectId
@@ -20,7 +20,7 @@ class Comment(Document):
     recipe_id: Annotated[PydanticObjectId, Indexed()]
     author: Link[User]
     text: str
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
     class Settings:
         name = "comments"

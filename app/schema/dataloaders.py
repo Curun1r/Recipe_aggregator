@@ -1,3 +1,5 @@
+from typing import cast
+
 from beanie import PydanticObjectId
 from beanie.operators import In
 from strawberry.dataloader import DataLoader
@@ -18,7 +20,9 @@ async def load_users(keys: list[PydanticObjectId]) -> list[User | None]:
     skipped, or every later key would shift by one.
     """
     users = await User.find(In(User.id, keys)).to_list()
-    by_id: dict[PydanticObjectId, User] = {user.id: user for user in users}
+    # Document.id is Optional[...] because an unsaved document has none;
+    # anything coming back from find() is saved, so the cast is safe.
+    by_id: dict[PydanticObjectId, User] = {cast(PydanticObjectId, user.id): user for user in users}
     return [by_id.get(key) for key in keys]
 
 

@@ -1,4 +1,4 @@
-from typing import Annotated, Union
+from typing import Annotated
 
 import strawberry
 from beanie import PydanticObjectId
@@ -25,17 +25,13 @@ class CommentError:
 # Same split as AuthResult: "recipe not found" is a business outcome the
 # client renders, while "not logged in" is a permission error — the two
 # are deliberately not modelled the same way.
-CommentResult = Annotated[
-    Union[CommentPayload, CommentError], strawberry.union("CommentResult")
-]
+CommentResult = Annotated[CommentPayload | CommentError, strawberry.union("CommentResult")]
 
 
 @strawberry.type
 class CommentMutations:
     @strawberry.mutation(permission_classes=[IsAuthenticated])
-    async def add_comment(
-        self, recipe_id: strawberry.ID, text: str, info: Info
-    ) -> CommentResult:
+    async def add_comment(self, recipe_id: strawberry.ID, text: str, info: Info) -> CommentResult:
         try:
             oid = PydanticObjectId(recipe_id)
         except (InvalidId, ValueError, TypeError):

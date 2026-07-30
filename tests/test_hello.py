@@ -1,6 +1,6 @@
+import pytest
 from flask import Flask
 from flask.testing import FlaskClient
-import pytest
 
 from app import create_app
 

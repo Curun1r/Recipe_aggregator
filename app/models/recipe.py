@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from beanie import Document, Link
 from pydantic import BaseModel, Field
@@ -40,7 +40,7 @@ class Recipe(Document):
     # default_factory, not default=... — otherwise the timestamp would be
     # fixed at import time (same pitfall as mutable defaults in Django).
     # tz-aware: utcnow() is deprecated in 3.12 and returned naive datetimes.
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
     class Settings:
         name = "recipes"

@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Annotated
 
 from beanie import Document, Indexed, PydanticObjectId
@@ -20,7 +20,7 @@ class User(Document):
     # read-modify-write race, which a through-model would need a
     # transaction for.
     favorite_recipe_ids: list[PydanticObjectId] = Field(default_factory=list)
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
     class Settings:
         name = "users"
