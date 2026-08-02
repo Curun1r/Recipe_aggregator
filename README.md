@@ -203,3 +203,7 @@ tests/
 A Railway deployment is planned (Docker + Hypercorn image, Mongo as a
 managed service) but not live yet. Nothing above depends on it — everything
 runs the same way locally via `docker compose up --build`.
+
+## License
+
+[MIT](LICENSE)
